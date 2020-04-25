@@ -1,4 +1,8 @@
-import { Context, APIGatewayProxyHandler } from "aws-lambda";
+import {
+  Context,
+  APIGatewayProxyHandler,
+  APIGatewayProxyEvent,
+} from "aws-lambda";
 import { DynamoDB } from "aws-sdk";
 import "source-map-support/register";
 
@@ -10,7 +14,7 @@ interface Link {
 }
 
 export const handler: APIGatewayProxyHandler = async (
-  event,
+  event: APIGatewayProxyEvent,
   _context: Context
 ) => {
   const linkId = event.pathParameters.path;
