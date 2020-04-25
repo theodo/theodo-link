@@ -1,0 +1,57 @@
+service: theodo-link
+
+plugins:
+  - serverless-webpack
+  - serverless-domain-manager
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${self:custom.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  stageConfig: ${file(./config.yml):${self:custom.stage}}
+  webpack:
+    packager: "yarn"
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+  customDomain:
+    domainName: ${self:custom.stageConfig.domainName}
+    basePath: ""
+    stage: ${self:custom.stage}
+    createRoute53Record: true
+
+functions:
+  link:
+    handler: src/link.handler
+    events:
+      - http:
+          path: "/{path}"
+          method: get
+
+resources:
+  Resources:
+    LinksDynamoDbTable:
+      Type: "AWS::DynamoDB::Table"
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
