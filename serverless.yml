@@ -3,6 +3,7 @@ service: theodo-link
 plugins:
   - serverless-webpack
   - serverless-domain-manager
+  - serverless-appsync-plugin
 
 provider:
   name: aws
@@ -32,13 +33,42 @@ custom:
     basePath: ""
     stage: ${self:custom.stage}
     createRoute53Record: true
+  appSync:
+    name: ${self:service}-${self:custom.stage}
+    authenticationType: AMAZON_COGNITO_USER_POOLS
+    userPoolConfig:
+      defaultAction: ALLOW
+      userPoolId: ${self:custom.stageConfig.userPoolId}
+    mappingTemplates:
+      - dataSource: Links
+        type: Mutation
+        field: createLink
+        request: "createLink-request-mapping-template.vtl"
+        response: "createLink-response-mapping-template.vtl"
+      - dataSource: Links
+        type: Mutation
+        field: updateLink
+        request: "updateLink-request-mapping-template.vtl"
+        response: "updateLink-response-mapping-template.vtl"
+      - dataSource: Links
+        type: Query
+        field: listLinks
+        request: "listLinks-request-mapping-template.vtl"
+        response: "listLinks-response-mapping-template.vtl"
+    schema: schema.graphql
+    dataSources:
+      - type: AMAZON_DYNAMODB
+        name: Links
+        description: Theodo Links Table
+        config:
+          tableName: { Ref: LinksDynamoDbTable }
 
 functions:
   link:
     handler: src/link.handler
     events:
       - http:
-          path: "/{path}"
+          path: "/{link+}"
           method: get
 
 resources:

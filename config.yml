@@ -1,5 +1,7 @@
 dev:
   domainName: dev.link.theo.do
+  userPoolId: us-east-1_3g8VdC4QM
 
 prod:
   domainName: link.theo.do
+  userPoolId: us-east-1_3g8VdC4QM

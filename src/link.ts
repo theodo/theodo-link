@@ -17,7 +17,7 @@ export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent,
   _context: Context
 ) => {
-  const linkId = event.pathParameters.path;
+  const linkId = event.pathParameters.link;
   console.log(linkId);
   const params = {
     TableName: process.env.DYNAMODB_TABLE,

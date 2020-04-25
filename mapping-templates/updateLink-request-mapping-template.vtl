@@ -1,0 +1,27 @@
+{
+    "version": "2017-02-28",
+    "operation": "UpdateItem",
+    "key": {
+        "id": $util.dynamodb.toDynamoDBJson($ctx.args.id)
+    },
+    "update": {
+        "expression": "SET #location = :location, #updatedAt = :updatedAt",
+        "expressionNames": {
+            "#location": "location",
+            "#updatedAt": "updatedAt"
+        },
+        "expressionValues": {
+            ":location": $util.dynamodb.toDynamoDBJson($ctx.args.location),
+            ":updatedAt": $util.dynamodb.toDynamoDBJson($util.time.nowISO8601())
+        }
+    },
+    "condition": {
+        "expression": "contains(#owner,:expectedOwner)",
+        "expressionNames": {
+            "#owner": "owner"
+        },
+        "expressionValues": {
+            ":expectedOwner": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
+        }
+    }
+}

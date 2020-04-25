@@ -1,0 +1,25 @@
+type Mutation {
+  createLink(id: String, location: String): Link!
+  updateLink(id: String, location: String): Link!
+}
+
+type PaginatedLinks {
+  items: [Link]
+  nextToken: String
+}
+
+type Query {
+  listLinks(limit: Int, nextToken: String): PaginatedLinks
+}
+
+type Link {
+  id: String!
+  location: String!
+  updatedAt: String
+  owner: String
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
