@@ -43,18 +43,28 @@ custom:
       - dataSource: Links
         type: Mutation
         field: createLink
-        request: "createLink-request-mapping-template.vtl"
-        response: "createLink-response-mapping-template.vtl"
+        request: "createLink-request.vtl"
+        response: "createLink-response.vtl"
       - dataSource: Links
         type: Mutation
         field: updateLink
-        request: "updateLink-request-mapping-template.vtl"
-        response: "updateLink-response-mapping-template.vtl"
+        request: "updateLink-request.vtl"
+        response: "updateLink-response.vtl"
+      - dataSource: Links
+        type: Mutation
+        field: deleteLink
+        request: "deleteLink-request.vtl"
+        response: "deleteLink-response.vtl"
       - dataSource: Links
         type: Query
         field: listLinks
-        request: "listLinks-request-mapping-template.vtl"
-        response: "listLinks-response-mapping-template.vtl"
+        request: "listLinks-request.vtl"
+        response: "listLinks-response.vtl"
+      - dataSource: Links
+        type: Query
+        field: getLink
+        request: "getLink-request.vtl"
+        response: "getLink-response.vtl"
     schema: schema.graphql
     dataSources:
       - type: AMAZON_DYNAMODB

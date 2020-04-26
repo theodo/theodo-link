@@ -1,6 +1,7 @@
 type Mutation {
-  createLink(id: String, location: String): Link!
-  updateLink(id: String, location: String): Link!
+  createLink(id: String!, location: String!): Link
+  updateLink(id: String!, location: String!): Link
+  deleteLink(id: String!): Link
 }
 
 type PaginatedLinks {
@@ -10,6 +11,7 @@ type PaginatedLinks {
 
 type Query {
   listLinks(limit: Int, nextToken: String): PaginatedLinks
+  getLink(id: String): Link
 }
 
 type Link {
