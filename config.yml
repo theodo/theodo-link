@@ -1,7 +1,7 @@
 dev:
   domainName: dev.link.theo.do
-  userPoolId: us-east-1_3g8VdC4QM
+  adminUrl: https://dev-admin.link.theo.do
 
 prod:
   domainName: link.theo.do
-  userPoolId: us-east-1_3g8VdC4QM
+  adminUrl: https://admin.link.theo.do

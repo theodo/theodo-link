@@ -7,6 +7,7 @@ plugins:
 
 provider:
   name: aws
+  region: eu-central-1
   runtime: nodejs12.x
   environment:
     DYNAMODB_TABLE: ${self:service}-${self:custom.stage}
@@ -38,7 +39,7 @@ custom:
     authenticationType: AMAZON_COGNITO_USER_POOLS
     userPoolConfig:
       defaultAction: ALLOW
-      userPoolId: ${self:custom.stageConfig.userPoolId}
+      userPoolId: { Ref: UserPool }
     mappingTemplates:
       - dataSource: Links
         type: Mutation
@@ -84,7 +85,7 @@ functions:
 resources:
   Resources:
     LinksDynamoDbTable:
-      Type: "AWS::DynamoDB::Table"
+      Type: AWS::DynamoDB::Table
       DeletionPolicy: Retain
       Properties:
         AttributeDefinitions:
@@ -95,3 +96,42 @@ resources:
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.DYNAMODB_TABLE}
+    UserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:service}-${self:custom.stage}
+        AdminCreateUserConfig:
+          AllowAdminCreateUserOnly: true
+    UserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      DependsOn: GoogleIdp
+      Properties:
+        ClientName: web-app
+        GenerateSecret: false
+        SupportedIdentityProviders:
+          - "Google"
+        CallbackURLs:
+          - ${self:custom.stageConfig.adminUrl}
+        AllowedOAuthFlowsUserPoolClient: true
+        AllowedOAuthFlows:
+          - implicit
+        AllowedOAuthScopes:
+          - openid
+        UserPoolId: { Ref: UserPool }
+    UserPoolDomain:
+      Type: AWS::Cognito::UserPoolDomain
+      Properties:
+        Domain: ${self:service}-${self:custom.stage}
+        UserPoolId: { Ref: UserPool }
+    GoogleIdp:
+      Type: AWS::Cognito::UserPoolIdentityProvider
+      Properties:
+        UserPoolId: { Ref: UserPool }
+        ProviderName: "Google"
+        ProviderDetails:
+          client_id: ${ssm:/theodo-link-google-client-id~true}
+          client_secret: ${ssm:/theodo-link-google-client-secret~true}
+          authorize_scopes: "profile email openid"
+        ProviderType: "Google"
+        AttributeMapping:
+          email: "email"
