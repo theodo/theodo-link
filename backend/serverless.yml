@@ -11,6 +11,7 @@ provider:
   runtime: nodejs12.x
   environment:
     DYNAMODB_TABLE: ${self:service}-${self:custom.stage}
+    ADMIN_URL: ${self:custom.stageConfig.adminUrl}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -80,6 +81,12 @@ functions:
     events:
       - http:
           path: "/{link+}"
+          method: get
+  home:
+    handler: src/link.handler
+    events:
+      - http:
+          path: "/"
           method: get
 
 resources:
