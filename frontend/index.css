@@ -1,0 +1,13 @@
+html,
+body {
+  height: 100%;
+}
+
+.container {
+  height: 100%;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif;
+}
